@@ -24,6 +24,10 @@
     φ⃗::Vector{Float64}  = zeros(Nᵩ)         # Productivity grid 
     Γ::Matrix{Float64}  = zeros(Nᵩ,Nᵩ)      # Transition matrix 
     ν⃗::Vector{Float64}  = zeros(Nᵩ)         # Stationary distribution 
+
+    # D. Algorithm settings  
+    δᵛᶠⁱ::Float64       = 1e-4      # Tolerance parameter for VFI 
+    𝒾̄ᵛᶠⁱ::Int           = 2000      # Maximum VFI iterations  
 end 
 
 # 2. Parameters (constructor)
@@ -49,14 +53,18 @@ UsedParameters = fnSetUpParameters()
 @with_kw mutable struct EndogenousVariables
 
     # A. Value functions 
-    V⃗::Vector{Float64}      # Value function 
+    V⃗::Vector{Float64}      # Value function
+    V⃗ᶜ::Vector{Float64}     # Continuation value 
     Vᵉ::Float64             # Entry value 
     π⃗::Vector{Float64}      # Profit function 
     n⃗::Vector{Float64}      # Hiring policy 
     𝕀ᵉ::Vector{Bool}        # Entry policy 
     𝕀ᶜ::Vector{Bool}        # Continuation policy
-    φ̲::Float64              # Minimum productivity   
-    P::Float64              # Price 
+    φ̲ᵢ::Int                 # Exit threshold index  
+    μ̃⃗::Vector{Float64}      # Per entrant distribution
+    Γ̃::Matrix{Float64}      # Modified transition matrix
+    Q̃ˢ::Float64             # Per entrant output 
+    M::Float64              # Entry mass   
 end
 
 # 2. Endogenous variables preallocation (constructor)
@@ -66,25 +74,33 @@ function fnSetUpEndo(params::UsedParameters)
     @unpack Nᵩ = params 
 
     # B. Preallocate values 
-    V⃗       = zeros(Nᵩ)     
+    V⃗       = zeros(Nᵩ) 
+    V⃗ᶜ      = zeros(Nᵩ)     
     Vᵉ      = 0.0
     π⃗       = zeros(Nᵩ)
     n⃗       = zeros(Nᵩ)
-    φ̲       = 0.0
+    φ̲ᵢ      = 1
     𝕀ᵉ      = fill(true,Nᵩ)
     𝕀ᶜ      = fill(true,Nᵩ)
-    p       = 0.0
+    μ̃⃗       = zeros(Nᵩ)
+    Γ̃       = zeros(Nᵩ,Nᵩ)     
+    Q̃ˢ      = 0.0
+    M       = 0.0
 
     # C. Return 
     return EndogenousVariables(
         V⃗   = V⃗,
+        V⃗ᶜ  = V⃗ᶜ,
         Vᵉ  = Vᵉ,
         π⃗   = π⃗, 
         n⃗   = n⃗,
-        φ̲   = φ̲,
+        φ̲ᵢ  = φ̲ᵢ,
         𝕀ᵉ  = 𝕀ᵉ,
         𝕀ᶜ  = 𝕀ᶜ,
-        p   = p
+        μ̃⃗   = μ̃⃗,
+        Γ̃   = Γ̃,
+        Q̃ˢ  = Q̃ˢ,
+        M   = M
     )   
 end 
 Endo    = fnSetUpEndo()
