@@ -55,7 +55,7 @@ function fnVFI!(params, endo)
 
         # Warning message  
         if 𝒾 == 𝒾̄ᵛᶠⁱ
-            println("Warning: VFI did not converge, lol. Final distance: ", ϵᵛᶠⁱ)
+            println("VFI did not converge, lol. Final distance: ", ϵᵛᶠⁱ)
         end 
     end 
 
@@ -83,21 +83,27 @@ function fnExitThreshold!(endo,params)
 end 
 
 # 5. Entry error 
-function fnEntryError(endo, params,p)
+function fnEntryError(endo, params, p)
 
-    # A. Static setting
+    # A. Unpacking
+    @unpack ν⃗,cₑ = params 
+
+    # B. Static setting
     fnStaticPolicies!(params, endo,p)
     fnV⁰!(params, endo)
 
-    # B. VFI 
+    # C. VFI 
     fnVFI!(params, endo)
     fnExitThreshold!(endo,params)
 
-    # C. Find Vᵉ(p) [To be continued]
-
+    # D. Find Vᵉ(p) 
+    endo.Vᵉ = dot(endo.V⃗, ν⃗)
+    return  endo.Vᵉ - cₑ
 end 
 
 # 6. Find p [To be continued]
+function fnSolvePrice(endo,params)
+end 
 
 # 7. Compute the per-entrant distribution 
 function fnDistributions!(endo,params)
