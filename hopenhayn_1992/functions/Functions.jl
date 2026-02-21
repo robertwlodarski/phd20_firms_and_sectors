@@ -4,9 +4,9 @@
 # 3. Value function iteration 
 # 4. Exit threshold 
 # 5. Entry error 
-# 6. Finding p 
-# 7. Updating distributions
-# 8. Aggregation business
+# 6. Updating distributions
+# 7. Aggregation business
+# 8. Solve for steady state 
 
 # 1. Static policy function  
 function fnStaticPolicies!(params, endo,p)
@@ -83,7 +83,7 @@ function fnExitThreshold!(endo,params)
 end 
 
 # 5. Entry error 
-function fnEntryError(endo, params, p)
+function fnEntryError!(endo, params, p)
 
     # A. Unpacking
     @unpack ν⃗,cₑ = params 
@@ -101,11 +101,7 @@ function fnEntryError(endo, params, p)
     return  endo.Vᵉ - cₑ
 end 
 
-# 6. Find p [To be continued]
-function fnSolvePrice(endo,params)
-end 
-
-# 7. Compute the per-entrant distribution 
+# 6. Compute the per-entrant distribution 
 function fnDistributions!(endo,params)
 
     # A. Unpacking business 
@@ -115,11 +111,66 @@ function fnDistributions!(endo,params)
     endo.μ̃⃗      = (I - endo.Γ̃) \ ν⃗
 end 
 
-# 8. Aggregation business 
-function fnAggregation(endo,params,p)
+# 7. Aggregation business 
+function fnAggregation!(endo,params,p)
 
     # A. Unpacking business 
-    @unpack α, φ⃗    = params 
+    @unpack α, φ⃗, D̄,ε    = params 
 
-    # B. Final product supply 
+    # B. Final product demand and per-entrant output
+    endo.D      = D̄ / (p^ε)
+    endo.y⃗      = (α * p)^(α /(1-α)) .*  φ⃗.^(1 / (1-α))
+    endo.Q̃ˢ     = dot(endo.y⃗,endo.μ̃⃗)
+
+    # C. Mass of firms
+    endo.M      = endo.D / endo.Q̃ˢ
+
+    # Equilibrium distribution 
+    endo.μ⃗      = endo.M .* endo.μ̃⃗
+end 
+
+# 8. Solve for steady state 
+function fnSolveSteadyState(params::ModelParameters,endo::EndogenousVariables)
+    
+    # A. Unpacking business 
+    @unpack p̲, p̅, φ⃗, c, cₑ = params 
+    
+    # B. Set up the optimisation 
+    𝓅           = (p̲,p̅)
+    𝒻(p)        = fnEntryError!(endo, params, p)
+
+    # C. Solve the model 
+    println("Solving for the steady state equilibrium")
+    p̂           = find_zero(𝒻,𝓅)
+    println("Equilibrium price:                     $p̂")
+
+    # D. Recalculate everything (do I need it?)
+    ϵ̂ᵉ          = fnEntryError!(endo, params, p̂)
+    println("Final error in the entry clearing:     $ϵ̂ᵉ")
+
+    # E. Get distributions 
+    fnDistributions!(endo,params)
+    fnAggregation!(endo,params,p̂)
+
+    # F. Print messages 
+    # Variables for printing
+    M̂       = endo.M
+    𝔼n̂      = dot(endo.n⃗,endo.μ⃗) / endo.M
+    𝔼ŷ      = dot(endo.y⃗,endo.μ⃗) / endo.M
+    𝔼φ̂      = dot(φ⃗,endo.μ⃗) / endo.M
+    𝔼π̂      = dot(endo.π⃗,endo.μ⃗) / endo.M
+    𝔼φ̲̂      = φ⃗[endo.φ̲ᵢ] / maximum(φ⃗)
+    𝔼N̂      = dot(endo.n⃗ .+ c,endo.μ⃗) + M̂ * cₑ
+    # Printout 
+    println("===============================================")
+    println("Mass of entrants:                      $M̂")
+    println("Average firm size:                     $𝔼n̂")
+    println("Average firm output:                   $𝔼ŷ")
+    println("Average firm productivity:             $𝔼φ̂")
+    println("Average firm profit:                   $𝔼π̂")
+    println("Entry threshold (% max productivity):  $𝔼φ̲̂")
+    println("Total labour supply:                   $𝔼N̂")
+
+    # G. Return 
+    return p̂
 end 

@@ -2,8 +2,10 @@
 # Replication: Hopenhayn (1992) 
 # February 2026
 
-## 1. Packages
-using Preferences, Parameters, Accessors, StaticArrays, Adapt, QuantEcon
-using Base.Cartesian, LinearAlgebra, SparseArrays, LoopVectorization, Interpolations
-using Distributions, Random, StatsBase, FastGaussQuadrature, Optim, Roots, Dierckx
-using BenchmarkTools, AllocCheck, MAT
+## 1. Packages & load functions 
+using Parameters, QuantEcon, LinearAlgebra, Roots
+include("functions/ModelInfrastructure.jl")
+include("functions/Functions.jl")
+
+## 2. Solve for steady state 
+p̂   = @time fnSolveSteadyState(UsedParameters,Endo)

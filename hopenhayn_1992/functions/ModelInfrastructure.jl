@@ -26,8 +26,10 @@
     ν⃗::Vector{Float64}  = zeros(Nᵩ)         # Stationary distribution 
 
     # D. Algorithm settings  
-    δᵛᶠⁱ::Float64       = 1e-4      # Tolerance parameter for VFI 
+    δᵛᶠⁱ::Float64       = 1e-5      # Tolerance parameter for VFI 
     𝒾̄ᵛᶠⁱ::Int           = 2000      # Maximum VFI iterations  
+    p̲::Float64          = 1e-3      # Minimum admissible price 
+    p̅::Float64          = 10        # Maximum admissible price
 end 
 
 # 2. Parameters (constructor)
@@ -64,11 +66,14 @@ UsedParameters = fnSetUpParameters()
     μ̃⃗::Vector{Float64}      # Per entrant distribution
     Γ̃::Matrix{Float64}      # Modified transition matrix
     Q̃ˢ::Float64             # Per entrant output 
-    M::Float64              # Entry mass   
+    M::Float64              # Entry mass  
+    D::Float64              # Demand  
+    μ⃗::Vector{Float64}      # Equilibrium distribution of firms
+    y⃗::Vector{Float64}      # Output per type of firm 
 end
 
 # 2. Endogenous variables preallocation (constructor)
-function fnSetUpEndo(params::UsedParameters)
+function fnSetUpEndo(params::ModelParameters)
 
     # A. Unpacking business 
     @unpack Nᵩ = params 
@@ -86,6 +91,9 @@ function fnSetUpEndo(params::UsedParameters)
     Γ̃       = zeros(Nᵩ,Nᵩ)     
     Q̃ˢ      = 0.0
     M       = 0.0
+    D       = 0.0
+    μ⃗       = zeros(Nᵩ)
+    y⃗       = zeros(Nᵩ)
 
     # C. Return 
     return EndogenousVariables(
@@ -100,7 +108,10 @@ function fnSetUpEndo(params::UsedParameters)
         μ̃⃗   = μ̃⃗,
         Γ̃   = Γ̃,
         Q̃ˢ  = Q̃ˢ,
-        M   = M
+        M   = M,
+        D   = D,
+        μ⃗   = μ⃗,
+        y⃗   = y⃗
     )   
 end 
-Endo    = fnSetUpEndo()
+Endo    = fnSetUpEndo(UsedParameters)
