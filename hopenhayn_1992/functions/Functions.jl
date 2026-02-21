@@ -154,11 +154,12 @@ function fnSolveSteadyState(params::ModelParameters,endo::EndogenousVariables)
 
     # F. Print messages 
     # Variables for printing
-    M̂       = endo.M
-    𝔼n̂      = dot(endo.n⃗,endo.μ⃗) / endo.M
-    𝔼ŷ      = dot(endo.y⃗,endo.μ⃗) / endo.M
-    𝔼φ̂      = dot(φ⃗,endo.μ⃗) / endo.M
-    𝔼π̂      = dot(endo.π⃗,endo.μ⃗) / endo.M
+    M̂       = endo.M        # Entrants 
+    M̂ⁱ      = sum(endo.μ⃗)   # Incumbents 
+    𝔼n̂      = dot(endo.n⃗,endo.μ⃗) / M̂ⁱ
+    𝔼ŷ      = dot(endo.y⃗,endo.μ⃗) / M̂ⁱ
+    𝔼φ̂      = dot(φ⃗,endo.μ⃗) / M̂ⁱ
+    𝔼π̂      = dot(endo.π⃗,endo.μ⃗) / M̂ⁱ
     𝔼φ̲̂      = φ⃗[endo.φ̲ᵢ] / maximum(φ⃗)
     𝔼N̂      = dot(endo.n⃗ .+ c,endo.μ⃗) + M̂ * cₑ
     # Printout 
@@ -169,7 +170,7 @@ function fnSolveSteadyState(params::ModelParameters,endo::EndogenousVariables)
     println("Average firm productivity:             $𝔼φ̂")
     println("Average firm profit:                   $𝔼π̂")
     println("Entry threshold (% max productivity):  $𝔼φ̲̂")
-    println("Total labour supply:                   $𝔼N̂")
+    println("Total labour demand:                   $𝔼N̂")
 
     # G. Return 
     return p̂
