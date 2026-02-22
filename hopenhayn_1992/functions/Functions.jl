@@ -140,13 +140,13 @@ function fnSolveSteadyState(params::ModelParameters,endo::EndogenousVariables)
     𝒻(p)        = fnEntryError!(endo, params, p)
 
     # C. Solve the model 
-    println("Solving for the steady state equilibrium")
+    # println("Solving for the steady state equilibrium")
     p̂           = find_zero(𝒻,𝓅)
-    println("Equilibrium price:                     $p̂")
+    # println("Equilibrium price:                     $(round(p̂,digits=2))")
 
     # D. Recalculate everything (do I need it?)
     ϵ̂ᵉ          = fnEntryError!(endo, params, p̂)
-    println("Final error in the entry clearing:     $ϵ̂ᵉ")
+    # println("Final error in the entry clearing:     $(round(ϵ̂ᵉ,digits=2))")
 
     # E. Get distributions 
     fnDistributions!(endo,params)
@@ -161,16 +161,17 @@ function fnSolveSteadyState(params::ModelParameters,endo::EndogenousVariables)
     𝔼φ̂      = dot(φ⃗,endo.μ⃗) / M̂ⁱ
     𝔼π̂      = dot(endo.π⃗,endo.μ⃗) / M̂ⁱ
     𝔼φ̲̂      = φ⃗[endo.φ̲ᵢ] / maximum(φ⃗)
-    𝔼N̂      = dot(endo.n⃗ .+ c,endo.μ⃗) + M̂ * cₑ
+    𝔼N̂      = dot(endo.n⃗,endo.μ⃗) 
+    𝔼Q̂      = endo.D
     # Printout 
-    println("===============================================")
-    println("Mass of entrants:                      $M̂")
-    println("Average firm size:                     $𝔼n̂")
-    println("Average firm output:                   $𝔼ŷ")
-    println("Average firm productivity:             $𝔼φ̂")
-    println("Average firm profit:                   $𝔼π̂")
-    println("Entry threshold (% max productivity):  $𝔼φ̲̂")
-    println("Total labour demand:                   $𝔼N̂")
+    # println("Mass of entrants:                      $(round(M̂,digits=2))")
+    # println("Average firm size:                     $(round(𝔼n̂,digits=2))")
+    # println("Average firm output:                   $(round(𝔼ŷ,digits=2))")
+    # println("Average firm productivity:             $(round(𝔼φ̂,digits=2))")
+    # println("Average firm profit:                   $(round(𝔼π̂,digits=2))")
+    # println("Entry threshold (% max productivity):  $(round(𝔼φ̲̂,digits=2))")
+    # println("Total labour demand:                   $(round(𝔼N̂,digits=2))")
+    # println("Total production:                      $(round(𝔼Q̂,digits=2))")
 
     # G. Return 
     return p̂

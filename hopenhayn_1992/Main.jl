@@ -3,7 +3,7 @@
 # February 2026
 
 ## 1. Packages & load functions 
-using Parameters, QuantEcon, LinearAlgebra, Roots
+using Parameters, QuantEcon, LinearAlgebra, Roots, Printf, DataFrames, Plots 
 include("functions/ModelInfrastructure.jl")
 include("functions/Functions.jl")
 
