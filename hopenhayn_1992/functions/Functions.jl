@@ -161,17 +161,17 @@ function fnSolveSteadyState(params::ModelParameters,endo::EndogenousVariables)
     𝔼φ̂      = dot(φ⃗,endo.μ⃗) / M̂ⁱ
     𝔼π̂      = dot(endo.π⃗,endo.μ⃗) / M̂ⁱ
     𝔼φ̲̂      = φ⃗[endo.φ̲ᵢ] / maximum(φ⃗)
-    𝔼N̂      = dot(endo.n⃗,endo.μ⃗) 
+    𝔼N̂      = dot(endo.n⃗ .+ c,endo.μ⃗)  + cₑ*M̂
     𝔼Q̂      = endo.D
     # Printout 
-    # println("Mass of entrants:                      $(round(M̂,digits=2))")
-    # println("Average firm size:                     $(round(𝔼n̂,digits=2))")
-    # println("Average firm output:                   $(round(𝔼ŷ,digits=2))")
-    # println("Average firm productivity:             $(round(𝔼φ̂,digits=2))")
-    # println("Average firm profit:                   $(round(𝔼π̂,digits=2))")
-    # println("Entry threshold (% max productivity):  $(round(𝔼φ̲̂,digits=2))")
-    # println("Total labour demand:                   $(round(𝔼N̂,digits=2))")
-    # println("Total production:                      $(round(𝔼Q̂,digits=2))")
+    println("Mass of entrants:                      $(round(M̂,digits=2))")
+    println("Average firm size:                     $(round(𝔼n̂,digits=2))")
+    println("Average firm output:                   $(round(𝔼ŷ,digits=2))")
+    println("Average firm productivity:             $(round(𝔼φ̂,digits=2))")
+    println("Average firm profit:                   $(round(𝔼π̂,digits=2))")
+    println("Entry threshold (% max productivity):  $(round(𝔼φ̲̂,digits=2))")
+    println("Total labour demand:                   $(round(𝔼N̂,digits=2))")
+    println("Total production:                      $(round(𝔼Q̂,digits=2))")
 
     # G. Return 
     return p̂
