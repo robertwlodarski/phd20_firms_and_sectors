@@ -35,9 +35,9 @@ function fnPrintResults(params::ModelParameters,endo::EndogenousVariables,p̂)
                     "Exit threshold (φ̲)",
                     "Total mass of incumbents (Mᵢ)",
                     "Average productivity across firms (𝔼φ)",
-                    "Average employment per firm (𝔼n)",
+                    "Average employment per firm (𝔼n + c)",
                     "Total aggregate output (Y)",
-                    "Labour productivity (Y/N)",
+                    "Labour productivity (Y/N, N = Mᵢ(𝔼n+c)+Mₑcₑ)",
                     "Exit rate (Mₑ/Mᵢ)",
                     "Employment share of top 10%"
                 ],
